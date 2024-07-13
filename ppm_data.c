@@ -1,15 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>  
-
-typedef struct {
-    unsigned char red, green,blue;
-} PPMpixeldata;
-
-typedef struct{
-    size_t x,y;
-    PPMpixeldata** data;
-} PPMimage;
+#include "ppm_data.h"
 
 char* itoa(char* buffer,int n)
 {
@@ -30,6 +19,19 @@ char* itoa(char* buffer,int n)
     return buffer;
 }
 
+PPMimage* init_PPM(int x,int y)
+{
+    PPMimage* image = calloc(1,sizeof(PPMimage));
+    image->x = x;
+    image->y = y;
+    image->data = calloc(y,sizeof(PPMpixeldata*));
+    for(int i = 0; i < x; i++)
+    {
+        image->data[i] = calloc(x, sizeof(PPMpixeldata));
+    }
+    return image;
+}
+
 PPMimage* read_ppm(const char* path)
 {
     FILE* stream_img  = fopen(path,"r");
@@ -46,7 +48,7 @@ PPMimage* read_ppm(const char* path)
     fgetc(stream_img);
 
     // Get the width
-    size_t width = 0;
+    int width = 0;
     int c = fgetc(stream_img);
     while (c != ' ')
     {
@@ -56,7 +58,7 @@ PPMimage* read_ppm(const char* path)
 
     c = fgetc(stream_img);
     // Get the height
-    size_t height = 0;
+    int height = 0;
     while(c != '\n')
     {
         height = height * 10 + c -'0';
@@ -65,14 +67,7 @@ PPMimage* read_ppm(const char* path)
 
     while(fgetc(stream_img) != '\n'); // Get  rid of the Max Val ( which takes one line )
 
-    PPMimage* image = calloc(1,sizeof(PPMimage));
-    image->x = width;
-    image->y = height;
-    image->data = calloc(height,sizeof(PPMpixeldata*));
-    for(size_t i = 0; i < width; i++)
-    {
-        image->data[i] = calloc(width, sizeof(PPMpixeldata));
-    }
+    PPMimage* image = init_PPM(width,height);
     for (int i = 0; i < height; i++)
     {
         for(int j = 0; j < width; j++)
@@ -137,16 +132,9 @@ void write_ppm(PPMimage* image,const char* path)
     fclose(stream_img);
 }
 
-int main(void)
+int max_pixel_color(PPMpixeldata pixel)
 {
-    PPMimage* img = read_ppm("bonhomme.ppm");
-    if(!img)
-    {
-        return 1;
-    }
-    
-    printf("height : %ld\nwidth : %ld\n", img->y,img->x);
-    write_ppm(img,"picturetest.ppm");
-    free(img);
-    return 0;
+    int max = (pixel.red > pixel.green) ? pixel.red : pixel.green;
+    max = (max > pixel.blue) ? max : pixel.blue;
+    return max;
 }
