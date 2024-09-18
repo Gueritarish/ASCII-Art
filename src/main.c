@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
         return 1;
     }
     PPMimage* upd = divide_resolution(img,2);
-    PPMimage* reduce = reduce_heigh(upd);
+    PPMimage* reduce = reduce_heigh(img);
     PPMimage* satur = saturate(reduce);
     display_picture(satur);
     free(img);

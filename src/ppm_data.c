@@ -147,25 +147,25 @@ int max_pixel_color(PPMpixeldata pixel)
 void display_pixel(PPMpixeldata pixel)
 {
     // .:cP0@#
-    if (max_pixel_color(pixel) < 32)
+    if (max_pixel_color(pixel) < 50)
         printf("%c", ' ');
 
-    else if (max_pixel_color(pixel) < 64)
+    else if (max_pixel_color(pixel) < 100)
         printf("%c", '.');
     
-    else if (max_pixel_color(pixel) < 96)
+    else if (max_pixel_color(pixel) < 140)
         printf("%c", ':');
     
-    else if (max_pixel_color(pixel) < 128)
+    else if (max_pixel_color(pixel) < 175)
         printf("%c", 'c');
     
-    else if (max_pixel_color(pixel) < 160)
+    else if (max_pixel_color(pixel) < 200)
         printf("%c", 'P');
     
-    else if (max_pixel_color(pixel) < 192)
+    else if (max_pixel_color(pixel) < 220)
         printf("%c", '0');
     
-    else if (max_pixel_color(pixel) < 224)
+    else if (max_pixel_color(pixel) < 240)
         printf("%c", '@');
     
     else
