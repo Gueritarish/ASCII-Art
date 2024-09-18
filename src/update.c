@@ -35,3 +35,19 @@ PPMimage* saturate(PPMimage* img)
     }
     return pic;
 }
+
+PPMimage* reduce_heigh(PPMimage* img)
+{
+    int h = (img->y % 2 == 0) ? img->y /2 : img->y / 2 -1;
+    PPMimage* pic = init_PPM(img->x,h);
+    for (int i = 0; i < h; i++)
+    {
+        for (int j = 0; j < img->x; j++)
+        {
+            pic->data[i][j].red = (img->data[2 * i][j].red + img->data[2 * i + 1][j].red) / 2;
+            pic->data[i][j].blue = (img->data[2 * i][j].blue + img->data[2 * i + 1][j].blue) / 2; 
+            pic->data[i][j].green = (img->data[2 * i][j].green + img->data[2 * i + 1][j].green) / 2; 
+        }
+    }
+    return pic;
+}

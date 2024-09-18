@@ -39,13 +39,19 @@ PPMimage* read_ppm(const char* path)
     {
         return NULL; 
     }
+
     // Get Rid of the 'P6\n'
-    if (!fgetc(stream_img) == 'P' || !fgetc(stream_img) == '6')
+    if (fgetc(stream_img) != 'P' || fgetc(stream_img) != '6')
     {
+        printf("Wrong format!\n");
         fclose(stream_img);
         return NULL;
     }
-    fgetc(stream_img);
+
+    if (fgetc(stream_img) == 13)
+    {
+        fgetc(stream_img);
+    }
 
     // Get the width
     int width = 0;
@@ -56,7 +62,7 @@ PPMimage* read_ppm(const char* path)
         c = fgetc(stream_img);
     }
 
-    c = fgetc(stream_img);
+    c = fgetc(stream_img); // '\n'
     // Get the height
     int height = 0;
     while(c != '\n')
@@ -98,7 +104,6 @@ void write_ppm(PPMimage* image,const char* path)
     int height = image->y;
     char* buffer = calloc(8,sizeof(char));
     char* str_w = itoa(buffer,width);
-    printf("%s\n",str_w);
     for (int i = 0; str_w[i] != '\0'; i++)
     {
         fputc(str_w[i],stream_img);
@@ -137,4 +142,45 @@ int max_pixel_color(PPMpixeldata pixel)
     int max = (pixel.red > pixel.green) ? pixel.red : pixel.green;
     max = (max > pixel.blue) ? max : pixel.blue;
     return max;
+}
+
+void display_pixel(PPMpixeldata pixel)
+{
+    // .:cP0@#
+    if (max_pixel_color(pixel) < 32)
+        printf("%c", ' ');
+
+    else if (max_pixel_color(pixel) < 64)
+        printf("%c", '.');
+    
+    else if (max_pixel_color(pixel) < 96)
+        printf("%c", ':');
+    
+    else if (max_pixel_color(pixel) < 128)
+        printf("%c", 'c');
+    
+    else if (max_pixel_color(pixel) < 160)
+        printf("%c", 'P');
+    
+    else if (max_pixel_color(pixel) < 192)
+        printf("%c", '0');
+    
+    else if (max_pixel_color(pixel) < 224)
+        printf("%c", '@');
+    
+    else
+        printf("%c", '#');
+    }
+
+void display_picture(PPMimage* pic)
+{
+    for (int i = 0; i < pic->y; i++)
+    {
+        for (int j = 0; j < pic->x; j++)
+        {
+            display_pixel(pic->data[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
 }
