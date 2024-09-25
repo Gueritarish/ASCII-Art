@@ -70,7 +70,7 @@ PPMimage* read_ppm(const char* path)
         height = height * 10 + c -'0';
         c = fgetc(stream_img);
     }
-
+    printf("height -> %d, width -> %d\n", height, width);
     while(fgetc(stream_img) != '\n'); // Get  rid of the Max Val ( which takes one line )
 
     PPMimage* image = init_PPM(width,height);
@@ -144,43 +144,15 @@ int max_pixel_color(PPMpixeldata pixel)
     return max;
 }
 
-void display_pixel(PPMpixeldata pixel)
-{
-    // .:cP0@#
-    if (max_pixel_color(pixel) < 50)
-        printf("%c", ' ');
 
-    else if (max_pixel_color(pixel) < 100)
-        printf("%c", '.');
-    
-    else if (max_pixel_color(pixel) < 140)
-        printf("%c", ':');
-    
-    else if (max_pixel_color(pixel) < 175)
-        printf("%c", 'c');
-    
-    else if (max_pixel_color(pixel) < 200)
-        printf("%c", 'P');
-    
-    else if (max_pixel_color(pixel) < 220)
-        printf("%c", '0');
-    
-    else if (max_pixel_color(pixel) < 240)
-        printf("%c", '@');
-    
-    else
-        printf("%c", '#');
-    }
-
-void display_picture(PPMimage* pic)
+int mean_pixel_color(PPMpixeldata pixel)
 {
-    for (int i = 0; i < pic->y; i++)
-    {
-        for (int j = 0; j < pic->x; j++)
-        {
-            display_pixel(pic->data[i][j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
+    return (pixel.red + pixel.blue + pixel.green) / 3;
+}
+
+int within_n_of(int color1, int color2, int n)
+{
+    if (color1 >= color2 - n && color1 <= color2 + n)
+        return 1;
+    return 0;
 }

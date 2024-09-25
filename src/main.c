@@ -1,3 +1,4 @@
+#include "display.h"
 #include "ppm_data.h"
 #include "update.h"
 
@@ -16,10 +17,10 @@ int main(int argc, char* argv[])
     PPMimage* upd = divide_resolution(img,2);
     PPMimage* reduce = reduce_heigh(img);
     PPMimage* satur = saturate(reduce);
-    display_picture(satur);
+    display_picture(reduce);
     free(img);
     free(upd);
     free(reduce);
-    free(satur);
+    //free(satur);
     return 0;
 }

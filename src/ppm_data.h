@@ -20,5 +20,5 @@ PPMimage* init_PPM(int x, int y);
 PPMimage* read_ppm(const char* path);
 void write_ppm(PPMimage* image,const char* path);
 int max_pixel_color(PPMpixeldata pixel);
-void display_pixel(PPMpixeldata pixel);
-void display_picture(PPMimage* pic);
+int mean_pixel_color(PPMpixeldata pixel);
+int within_n_of(int color1, int color2, int n);
