@@ -4,17 +4,24 @@ void choose_color(PPMpixeldata pixel)
 {
     {
         int px_max = max_pixel_color(pixel);
-        if (within_n_of(px_max,mean_pixel_color(pixel),10))
+        if (within_n_of(px_max,mean_pixel_color(pixel),5))
             printf("%s",WHITE);
         else if (pixel.red == px_max)
         {
-            if (within_n_of(pixel.red,pixel.green,5))
+            if (within_n_of(pixel.red,pixel.green,35))
             {
-                printf("%s",YELLOW);
+                if (within_n_of(pixel.red,pixel.green,5))
+                {
+                    printf("%s",YELLOW);
+                }
+                else
+                {
+                    printf("%s",ORANGE);
+                }
             }
             else if (within_n_of(pixel.red,pixel.blue,5))
             {
-                printf("%s",PURPLE);
+                printf("%s",PINK);
             }
             else
             {
@@ -42,9 +49,16 @@ void choose_color(PPMpixeldata pixel)
             {
                 printf("%s",CYAN);
             }
-            else if (within_n_of(pixel.blue,pixel.red,5))
+            else if (within_n_of(pixel.blue,pixel.red,25))
             {
-                printf("%s",PURPLE);
+                if (within_n_of(pixel.blue,pixel.red,5))
+                {
+                    printf("%s",PINK);
+                }
+                else
+                {
+                    printf("%s",PURPLE);
+                }
             }
             else
             {
@@ -61,25 +75,25 @@ void choose_color(PPMpixeldata pixel)
 void display_pixel(PPMpixeldata pixel)
 {
     // .:cP0@#
-    if (max_pixel_color(pixel) < 50)
+    if (mean_pixel_color(pixel) < 45)
         printf("%c", ' ');
 
-    else if (max_pixel_color(pixel) < 100)
+    else if (mean_pixel_color(pixel) < 90)
         printf("%c", '.');
     
-    else if (max_pixel_color(pixel) < 140)
+    else if (mean_pixel_color(pixel) < 130)
         printf("%c", ':');
     
-    else if (max_pixel_color(pixel) < 175)
+    else if (mean_pixel_color(pixel) < 165)
         printf("%c", 'c');
     
-    else if (max_pixel_color(pixel) < 200)
+    else if (mean_pixel_color(pixel) < 190)
         printf("%c", 'P');
     
-    else if (max_pixel_color(pixel) < 220)
+    else if (mean_pixel_color(pixel) < 210)
         printf("%c", '0');
     
-    else if (max_pixel_color(pixel) < 240)
+    else if (mean_pixel_color(pixel) < 230)
         printf("%c", '@');
     
     else

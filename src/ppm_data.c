@@ -32,6 +32,67 @@ PPMimage* init_PPM(int x,int y)
     return image;
 }
 
+int get_max(int n, ...)
+{
+    va_list ptr;
+
+    va_start(ptr, n);
+    int max = va_arg(ptr, int);   
+    int temp;
+    for (int i = 1; i < n; i++)
+    {
+        // Accessing current variable
+        // and pointing to next one
+        temp = va_arg(ptr, int);
+        if (temp > max)
+            max = temp;
+    }
+    // Ending argument list traversal
+    va_end(ptr);
+ 
+    return max;
+}
+
+int get_second_max(int n, ...)
+{
+    va_list ptr;
+
+    va_start(ptr, n);
+    int max = va_arg(ptr, int);
+    int second = va_arg(ptr, int);
+    int temp;
+    if (second > max)
+    {
+        temp = second;
+        second = max;
+        max = temp;
+    }
+    
+    for (int i = 1; i < n; i++)
+    {
+        // Accessing current variable
+        // and pointing to next one
+        temp = va_arg(ptr, int);
+        if (temp > second)
+        {
+            if (temp > max)
+            {
+                second = max;
+                max = temp;
+            }
+            else
+            {
+                second = temp;
+            }
+        }
+    }
+    // Ending argument list traversal
+    va_end(ptr);
+    return second;
+}
+
+
+
 PPMimage* read_ppm(const char* path)
 {
     FILE* stream_img  = fopen(path,"r");
@@ -72,7 +133,7 @@ PPMimage* read_ppm(const char* path)
     }
     printf("height -> %d, width -> %d\n", height, width);
     while(fgetc(stream_img) != '\n'); // Get  rid of the Max Val ( which takes one line )
-
+    int mean_red, mean_green, mean_blue;
     PPMimage* image = init_PPM(width,height);
     for (int i = 0; i < height; i++)
     {
@@ -81,11 +142,80 @@ PPMimage* read_ppm(const char* path)
             image->data[i][j].red = fgetc(stream_img);
             image->data[i][j].green = fgetc(stream_img);
             image->data[i][j].blue = fgetc(stream_img);
+            mean_red += image->data[i][j].red;
+            mean_green += image->data[i][j].green;
+            mean_blue += image->data[i][j].blue;
         }
 
     }
+    mean_red = mean_red / ( image->x * image->y );
+    mean_green = mean_green / ( image->x * image->y );
+    mean_blue = mean_blue / ( image->x * image->y );
+    
+    int first,second;
+    
+    if (mean_red > mean_green)
+    {
+        if (mean_red > mean_blue)
+        {
+            first = mean_red;
+            second = (mean_blue > mean_green) ? mean_blue : mean_green;
+        }
+        else
+        {
+            first = mean_blue;
+            second = mean_red;
+        }
+    }
+    else
+    {
+        if (mean_green > mean_blue)
+        {
+            first = mean_green;
+            second = (mean_blue > mean_red) ? mean_blue : mean_red;
+        }
+        else
+        {
+            first = mean_blue;
+            second = mean_green;
+        }
+    }
+
+    for (int i = 0; i < height; i++)
+    {
+        for(int j = 0; j < width; j++)
+        {
+            if (second == first)
+            {
+                if (mean_red == first)
+                    image->data[i][j].red /= 1.05;
+                if (mean_green == first)
+                    image->data[i][j].green /= 1.05;
+                if (mean_blue == first)
+                    image->data[i][j].blue /= 1.05;             
+            }
+            else
+            {
+               if (mean_red == first)
+                    image->data[i][j].red /= 1.1;
+                if (mean_green == first)
+                    image->data[i][j].green /= 1.1;
+                if (mean_blue == first)
+                    image->data[i][j].blue /= 1.1;
+
+                if (mean_red == second)
+                    image->data[i][j].red /= 1.05;
+                if (mean_green == second)
+                    image->data[i][j].green /= 1.05;
+                if (mean_blue == second)
+                    image->data[i][j].blue /= 1.05;  
+
+            }
+        }
+    }    
 
     // free(buff);
+
     fclose(stream_img);
     return image;
 }
@@ -146,7 +276,7 @@ int max_pixel_color(PPMpixeldata pixel)
 
 
 int mean_pixel_color(PPMpixeldata pixel)
-{
+{   
     return (pixel.red + pixel.blue + pixel.green) / 3;
 }
 
