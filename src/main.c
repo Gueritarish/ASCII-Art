@@ -14,12 +14,12 @@ int main(int argc, char* argv[])
     {
         return 1;
     }
-    PPMimage* upd = divide_resolution(img,2);
+    // PPMimage* upd = divide_resolution(img,2);
     PPMimage* reduce = reduce_heigh(img);
-    PPMimage* satur = saturate(reduce);
+    // PPMimage* satur = saturate(reduce);
     display_picture(reduce);
     free(img);
-    free(upd);
+    // free(upd);
     free(reduce);
     //free(satur);
     return 0;

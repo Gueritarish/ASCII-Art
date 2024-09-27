@@ -24,74 +24,13 @@ PPMimage* init_PPM(int x,int y)
     PPMimage* image = calloc(1,sizeof(PPMimage));
     image->x = x;
     image->y = y;
-    image->data = calloc(y,sizeof(PPMpixeldata*));
-    for(int i = 0; i < x; i++)
+    image->data = calloc(image->y,sizeof(PPMpixeldata*));
+    for(int i = 0; i < image->y; i++)
     {
-        image->data[i] = calloc(x, sizeof(PPMpixeldata));
+        image->data[i] = calloc(image->x, sizeof(PPMpixeldata));
     }
     return image;
 }
-
-int get_max(int n, ...)
-{
-    va_list ptr;
-
-    va_start(ptr, n);
-    int max = va_arg(ptr, int);   
-    int temp;
-    for (int i = 1; i < n; i++)
-    {
-        // Accessing current variable
-        // and pointing to next one
-        temp = va_arg(ptr, int);
-        if (temp > max)
-            max = temp;
-    }
-    // Ending argument list traversal
-    va_end(ptr);
- 
-    return max;
-}
-
-int get_second_max(int n, ...)
-{
-    va_list ptr;
-
-    va_start(ptr, n);
-    int max = va_arg(ptr, int);
-    int second = va_arg(ptr, int);
-    int temp;
-    if (second > max)
-    {
-        temp = second;
-        second = max;
-        max = temp;
-    }
-    
-    for (int i = 1; i < n; i++)
-    {
-        // Accessing current variable
-        // and pointing to next one
-        temp = va_arg(ptr, int);
-        if (temp > second)
-        {
-            if (temp > max)
-            {
-                second = max;
-                max = temp;
-            }
-            else
-            {
-                second = temp;
-            }
-        }
-    }
-    // Ending argument list traversal
-    va_end(ptr);
-    return second;
-}
-
-
 
 PPMimage* read_ppm(const char* path)
 {
@@ -139,7 +78,8 @@ PPMimage* read_ppm(const char* path)
     {
         for(int j = 0; j < width; j++)
         {
-            image->data[i][j].red = fgetc(stream_img);
+            char c =  fgetc(stream_img);
+            image->data[i][j].red = c;
             image->data[i][j].green = fgetc(stream_img);
             image->data[i][j].blue = fgetc(stream_img);
             mean_red += image->data[i][j].red;

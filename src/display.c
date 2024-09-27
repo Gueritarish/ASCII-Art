@@ -78,22 +78,22 @@ void display_pixel(PPMpixeldata pixel)
     if (mean_pixel_color(pixel) < 45)
         printf("%c", ' ');
 
-    else if (mean_pixel_color(pixel) < 90)
+    else if (mean_pixel_color(pixel) < 95)
         printf("%c", '.');
     
     else if (mean_pixel_color(pixel) < 130)
         printf("%c", ':');
     
-    else if (mean_pixel_color(pixel) < 165)
+    else if (mean_pixel_color(pixel) < 160)
         printf("%c", 'c');
     
-    else if (mean_pixel_color(pixel) < 190)
+    else if (mean_pixel_color(pixel) < 185)
         printf("%c", 'P');
     
-    else if (mean_pixel_color(pixel) < 210)
+    else if (mean_pixel_color(pixel) < 205)
         printf("%c", '0');
     
-    else if (mean_pixel_color(pixel) < 230)
+    else if (mean_pixel_color(pixel) < 220)
         printf("%c", '@');
     
     else
