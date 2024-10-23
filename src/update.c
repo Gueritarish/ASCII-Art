@@ -2,21 +2,22 @@
 
 #include "ppm_data.h"
 
-PPMimage* divide_resolution(PPMimage* img,int n)
+PPMimage* divide_by_two(PPMimage* img)
 {
-    int h = (img->y % n == 0) ? img->y /n : img->y/n -1;
-    int w = (img->x % n == 0) ? img->x /n : img->x/n -1;
+    int h = (img->y % 2 == 0) ? img->y /2 : img->y/2 -1;
+    int w = (img->x % 2 == 0) ? img->x /2 : img->x/2 -1;
     PPMimage* pic = init_PPM(w,h);
 
     for (int i = 0; i < h; i++)
     {
         for (int j = 0; j < w; j++)
         {
-            pic->data[i][j].red = ( img->data[n * i][n * j].red + img->data[n * i + 1][n * j].red + img->data[n * i][n * j + 1].red + img->data[n * i +1][n * j +1].red)/4;
-            pic->data[i][j].green = ( img->data[n * i][n * j].green + img->data[n * i + 1][n * j].green + img->data[n * i][n * j + 1].green + img->data[n * i +1][n * j +1].green)/4;
-            pic->data[i][j].blue = ( img->data[n * i][n * j].blue + img->data[n * i + 1][n * j].blue + img->data[n * i][n * j + 1].blue + img->data[n * i +1][n * j +1].blue)/4;
+            pic->data[i][j].red = ( img->data[2 * i][2 * j].red + img->data[2 * i + 1][2 * j].red + img->data[2 * i][2 * j + 1].red + img->data[2 * i +1][2 * j +1].red)/4;
+            pic->data[i][j].green = ( img->data[2 * i][2 * j].green + img->data[2 * i + 1][2 * j].green + img->data[2 * i][2 * j + 1].green + img->data[2 * i +1][2 * j +1].green)/4;
+            pic->data[i][j].blue = ( img->data[2 * i][2 * j].blue + img->data[2 * i + 1][2 * j].blue + img->data[2 * i][2 * j + 1].blue + img->data[2 * i +1][2 * j +1].blue)/4;
         }
     }
+    free_PPM(img);
     return pic;
 }
 
@@ -33,6 +34,7 @@ PPMimage* saturate(PPMimage* img)
             pic->data[i][j].blue = satur;
         }
     }
+    free_PPM(img);
     return pic;
 }
 
@@ -47,7 +49,8 @@ PPMimage* reduce_heigh(PPMimage* img)
             pic->data[i][j].red = (img->data[2 * i][j].red + img->data[2 * i + 1][j].red) / 2;
             pic->data[i][j].blue = (img->data[2 * i][j].blue + img->data[2 * i + 1][j].blue) / 2; 
             pic->data[i][j].green = (img->data[2 * i][j].green + img->data[2 * i + 1][j].green) / 2; 
-        }
+        }        
     }
+    free_PPM(img);
     return pic;
 }

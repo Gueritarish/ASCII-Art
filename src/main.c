@@ -5,29 +5,32 @@
 
 int main(int argc, char* argv[])
 {
-    if (argc != 2)
-    {
-        printf("Please provide one single path to a ppm picture.\n");
-        return 1;
-    }
+    char* write_path = NULL;
     PPMimage* img = NULL;
-    if (end_with(argv[1],".jpeg") || end_with(argv[1],".jpg"))
-        img = read_jpeg(argv[1]);
-    else if (end_with(argv[1],".png"))
-        img = read_png(argv[1]);
-    else if (end_with(argv[1],".ppm"))
-        img = read_ppm(argv[1]);
-    if(!img)
+    int options = get_options(argc, argv, &img, &write_path);
+    if (options == HELP)
+        return 0;
+    else if (options == ERROR)
+        return 1;
+    else if(!img)
     {
+        printf("Please provide a valid path to a picture.\n");
         return 1;
     }
-    // PPMimage* upd = divide_resolution(img,2);
-    PPMimage* reduce = reduce_heigh(img);
-    PPMimage* satur = saturate(reduce);
-    display_picture(satur);
-    free(img);
-    // free(upd);
-    free(reduce);
-    free(satur);
+    if ((options & MONO) != 0)
+        img = saturate(img);
+    
+    if ((options & REDUCE) != 0)
+        img = divide_by_two(img);
+    
+    if ((options & WRITE) != 0)
+        write_ppm(img, write_path);
+
+    img = reduce_heigh(img);
+    if ((options & STANDARD_COLOR) != 0)
+        display_picture_standard(img);
+    else
+        display_picture_true_color(img);
+    free_PPM(img);
     return 0;
 }

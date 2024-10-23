@@ -17,6 +17,7 @@ char* itoa(char* buffer,int n);
 
 
 PPMimage* init_PPM(int x, int y);
+void free_PPM(PPMimage* img);
 PPMimage* read_ppm(const char* path);
 PPMimage* read_jpeg(const char *filename);
 PPMimage* read_png(const char *filename);

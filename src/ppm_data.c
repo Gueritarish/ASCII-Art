@@ -5,6 +5,12 @@
 
 char* itoa(char* buffer,int n)
 {
+    if (n == 0)
+    {
+        buffer[0] = '0';
+        buffer[1] = '\0';
+        return buffer;
+    }
     int i = 0;
     while(n != 0)
     {
@@ -35,6 +41,20 @@ PPMimage* init_PPM(int x,int y)
     return image;
 }
 
+void free_PPM(PPMimage* img)
+{
+    if (!img)
+        return;
+    for (int i = 0; i < img->y; i++)
+    {
+        if (img->data[i])
+            free(img->data[i]);
+    }
+    if (img->data)
+        free(img->data);
+    free(img);
+}
+
 PPMimage* read_ppm(const char* path)
 {
     FILE* stream_img  = fopen(path,"r");
@@ -46,7 +66,7 @@ PPMimage* read_ppm(const char* path)
     // Get Rid of the 'P6\n'
     if (fgetc(stream_img) != 'P' || fgetc(stream_img) != '6')
     {
-        printf("Wrong format!\n");
+        printf("Wrong format of PPM file, need a P6\n");
         fclose(stream_img);
         return NULL;
     }
@@ -73,9 +93,7 @@ PPMimage* read_ppm(const char* path)
         height = height * 10 + c -'0';
         c = fgetc(stream_img);
     }
-    printf("height -> %d, width -> %d\n", height, width);
     while(fgetc(stream_img) != '\n'); // Get  rid of the Max Val ( which takes one line )
-    int mean_red, mean_green, mean_blue;
     PPMimage* image = init_PPM(width,height);
     for (int i = 0; i < height; i++)
     {
@@ -85,77 +103,9 @@ PPMimage* read_ppm(const char* path)
             image->data[i][j].red = c;
             image->data[i][j].green = fgetc(stream_img);
             image->data[i][j].blue = fgetc(stream_img);
-            mean_red += image->data[i][j].red;
-            mean_green += image->data[i][j].green;
-            mean_blue += image->data[i][j].blue;
         }
 
-    }
-    mean_red = mean_red / ( image->x * image->y );
-    mean_green = mean_green / ( image->x * image->y );
-    mean_blue = mean_blue / ( image->x * image->y );
-    
-    int first,second;
-    
-    if (mean_red > mean_green)
-    {
-        if (mean_red > mean_blue)
-        {
-            first = mean_red;
-            second = (mean_blue > mean_green) ? mean_blue : mean_green;
-        }
-        else
-        {
-            first = mean_blue;
-            second = mean_red;
-        }
-    }
-    else
-    {
-        if (mean_green > mean_blue)
-        {
-            first = mean_green;
-            second = (mean_blue > mean_red) ? mean_blue : mean_red;
-        }
-        else
-        {
-            first = mean_blue;
-            second = mean_green;
-        }
-    }
-
-    for (int i = 0; i < height; i++)
-    {
-        for(int j = 0; j < width; j++)
-        {
-            if (second == first)
-            {
-                if (mean_red == first)
-                    image->data[i][j].red /= 1.05;
-                if (mean_green == first)
-                    image->data[i][j].green /= 1.05;
-                if (mean_blue == first)
-                    image->data[i][j].blue /= 1.05;             
-            }
-            else
-            {
-               if (mean_red == first)
-                    image->data[i][j].red /= 1.1;
-                if (mean_green == first)
-                    image->data[i][j].green /= 1.1;
-                if (mean_blue == first)
-                    image->data[i][j].blue /= 1.1;
-
-                if (mean_red == second)
-                    image->data[i][j].red /= 1.05;
-                if (mean_green == second)
-                    image->data[i][j].green /= 1.05;
-                if (mean_blue == second)
-                    image->data[i][j].blue /= 1.05;  
-
-            }
-        }
-    }    
+    }  
 
     // free(buff);
 

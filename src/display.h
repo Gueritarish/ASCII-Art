@@ -34,6 +34,7 @@
 #define PURPLE "\033[0;95m"
 
 
-void choose_color(PPMpixeldata pixel);
-void display_pixel(PPMpixeldata pixel);
-void display_picture(PPMimage* pic);
+char* choose_color(PPMpixeldata pixel);
+char* get_char_pixel(PPMpixeldata pixel);
+void display_picture_standard(PPMimage* pic);
+void display_picture_true_color(PPMimage* pic);
