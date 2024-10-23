@@ -1,5 +1,8 @@
 #include "ppm_data.h"
 
+#include <jpeglib.h>
+#include <png.h>
+
 char* itoa(char* buffer,int n)
 {
     int i = 0;
@@ -157,6 +160,127 @@ PPMimage* read_ppm(const char* path)
     // free(buff);
 
     fclose(stream_img);
+    return image;
+}
+
+PPMimage* read_jpeg(const char *filename)
+{
+    struct jpeg_decompress_struct jds;
+    struct jpeg_error_mgr jerr;
+    FILE *file;
+    JSAMPARRAY buffer;
+
+    if ((file = fopen(filename, "rb")) == NULL) {
+        fprintf(stderr, "Can't open %s\n", filename);
+        return NULL;
+    }
+
+    jds.err = jpeg_std_error(&jerr);
+    jpeg_create_decompress(&jds);
+    jpeg_stdio_src(&jds, file);
+    jpeg_read_header(&jds, TRUE);
+    jpeg_start_decompress(&jds);
+
+    PPMimage *image = init_PPM(jds.output_width, jds.output_height);
+
+    while (jds.output_scanline < jds.output_height) {
+        buffer = (*jds.mem->alloc_sarray)( (j_common_ptr) &jds, JPOOL_IMAGE, jds.output_width * jds.output_components, 1);
+        jpeg_read_scanlines(&jds, buffer, 1);
+        for (unsigned int x = 0; x < jds.output_width; x++) {
+            if (jds.output_components == 3) { // RGB
+                image->data[jds.output_scanline - 1][x].red = buffer[0][x * 3];
+                image->data[jds.output_scanline - 1][x].green = buffer[0][x * 3 + 1];
+                image->data[jds.output_scanline - 1][x].blue = buffer[0][x * 3 + 2];
+            }
+        }
+    }
+
+    jpeg_finish_decompress(&jds);
+    jpeg_destroy_decompress(&jds);
+    fclose(file);
+    return image;
+}
+
+
+PPMimage* read_png(const char *filename)
+{
+    FILE *fp = fopen(filename, "rb");
+    if (!fp) {
+        fprintf(stderr, "Could not open file %s for reading\n", filename);
+        return NULL;
+    }
+
+    png_structp png = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    if (!png) {
+        fclose(fp);
+        fprintf(stderr, "Could not create PNG read struct\n");
+        return NULL;
+    }
+
+    png_infop info = png_create_info_struct(png);
+    if (!info) {
+        png_destroy_read_struct(&png, NULL, NULL);
+        fclose(fp);
+        fprintf(stderr, "Could not create PNG info struct\n");
+        return NULL;
+    }
+
+    if (setjmp(png_jmpbuf(png))) {
+        png_destroy_read_struct(&png, &info, NULL);
+        fclose(fp);
+        fprintf(stderr, "Error during PNG creation\n");
+        return NULL;
+    }
+
+    png_init_io(png, fp);
+    png_read_info(png, info);
+    int width = png_get_image_width(png, info);
+    int height = png_get_image_height(png, info);
+    PPMimage *image = init_PPM(width, height);
+
+    png_byte color_type = png_get_color_type(png, info);
+    png_byte bit_depth = png_get_bit_depth(png, info);
+    
+
+    if (color_type == PNG_COLOR_TYPE_PALETTE)
+        png_set_palette_to_rgb(png);
+
+    if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
+        png_set_expand_gray_1_2_4_to_8(png);
+
+    if (png_get_valid(png, info, PNG_INFO_tRNS))
+        png_set_tRNS_to_alpha(png);
+
+    if (bit_depth == 16)
+        png_set_strip_16(png);
+
+    if (color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
+        png_set_gray_to_rgb(png);
+
+    png_read_update_info(png, info);
+
+    png_bytep *row_pointers = malloc(height * sizeof(png_bytep));
+    
+    for (int y = 0; y < height; y++)
+        row_pointers[y] = (png_byte *)malloc(png_get_rowbytes(png, info));
+
+    png_read_image(png, row_pointers);
+
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            image->data[y][x].red = row_pointers[y][x * 3];
+            image->data[y][x].green = row_pointers[y][x * 3 + 1];
+            image->data[y][x].blue = row_pointers[y][x * 3 + 2];
+        }
+    }
+
+    for (int y = 0; y < height; y++) {
+        free(row_pointers[y]);
+    }
+    free(row_pointers);
+    png_destroy_read_struct(&png, &info, NULL);
+    fclose(fp);
+
     return image;
 }
 

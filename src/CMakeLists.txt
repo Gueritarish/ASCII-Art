@@ -5,4 +5,9 @@ add_executable(ascii
                ppm_data.h
                update.c
                update.h
-               main.c) 
+               utils.h
+               utils.c
+               main.c)
+
+target_link_libraries(ascii jpeg)
+target_link_libraries(ascii png)

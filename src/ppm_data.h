@@ -18,6 +18,8 @@ char* itoa(char* buffer,int n);
 
 PPMimage* init_PPM(int x, int y);
 PPMimage* read_ppm(const char* path);
+PPMimage* read_jpeg(const char *filename);
+PPMimage* read_png(const char *filename);
 void write_ppm(PPMimage* image,const char* path);
 int max_pixel_color(PPMpixeldata pixel);
 int mean_pixel_color(PPMpixeldata pixel);
