@@ -71,12 +71,16 @@ int get_options(int argc,char* argv[], PPMimage** img, char** writing_path)
         }
         else if (strcmp(argv[i],"-r") == 0 || strcmp(argv[i],"--reduce") == 0)
         {
-            if ((options & REDUCE) != 0)
+            if ((options & REDUCE2) != 0)
             {
                 options = ERROR;
                 break;
             }
-            options |= REDUCE;
+            if ((options & REDUCE1) != 0)
+            {
+                options |= REDUCE2;
+            }
+            options |= REDUCE1;
         }
         else if (strcmp(argv[i],"-std") == 0 || strcmp(argv[i],"--standard") == 0 || strcmp(argv[i],"--regular") == 0)
         {

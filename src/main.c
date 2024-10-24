@@ -20,7 +20,10 @@ int main(int argc, char* argv[])
     if ((options & MONO) != 0)
         img = saturate(img);
     
-    if ((options & REDUCE) != 0)
+    if ((options & REDUCE1) != 0)
+        img = divide_by_two(img);
+    
+    if ((options & REDUCE2) != 0)
         img = divide_by_two(img);
     
     if ((options & WRITE) != 0)

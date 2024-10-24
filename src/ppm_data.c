@@ -187,7 +187,6 @@ PPMimage* read_png(const char *filename)
     int width = png_get_image_width(png, info);
     int height = png_get_image_height(png, info);
     PPMimage *image = init_PPM(width, height);
-
     png_byte color_type = png_get_color_type(png, info);
     png_byte bit_depth = png_get_bit_depth(png, info);
     
@@ -212,15 +211,14 @@ PPMimage* read_png(const char *filename)
     png_bytep *row_pointers = malloc(height * sizeof(png_bytep));
     
     for (int y = 0; y < height; y++)
-        row_pointers[y] = (png_byte *)malloc(png_get_rowbytes(png, info));
+        row_pointers[y] = malloc(png_get_rowbytes(png, info));
 
     png_read_image(png, row_pointers);
-
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            image->data[y][x].red = row_pointers[y][x * 3];
-            image->data[y][x].green = row_pointers[y][x * 3 + 1];
-            image->data[y][x].blue = row_pointers[y][x * 3 + 2];
+            image->data[y][x].red = row_pointers[y][x * 4];
+            image->data[y][x].green = row_pointers[y][x * 4 + 1];
+            image->data[y][x].blue = row_pointers[y][x * 4 + 2];
         }
     }
 

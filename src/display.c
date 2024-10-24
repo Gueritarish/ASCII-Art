@@ -119,6 +119,7 @@ void display_picture_standard(PPMimage* pic)
     memcpy(img + ind, "\n", sizeof(char));
     ind += 1;
     printf("%s\n",img);
+    fflush(stdout);
     free(img);
 }
 
@@ -128,6 +129,7 @@ void display_picture_true_color(PPMimage* pic)
     char* img = calloc(pic->x * pic->y * 20 + pic->y + 1,sizeof(char));
     size_t ind = 0;
     char* buff = calloc(32, sizeof(char));
+    fflush(stdout);
     for (int i = 0; i < pic->y; i++)
     {
         for (int j = 0; j < pic->x; j++)
@@ -161,7 +163,9 @@ void display_picture_true_color(PPMimage* pic)
         ind += 1;
 
     }
-    printf("%s\n",img);
+    //printf("%s\n",img);
+    fwrite(img,sizeof(char),ind + 1, stdout);
+    fflush(stdout);
     // FILE* file = fopen("img.log","w");
     // fprintf(file,"%s\n", img);
     // fclose(file);
