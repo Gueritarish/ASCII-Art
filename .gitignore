@@ -2,3 +2,5 @@ build/*
 .vscode
 *.o
 ascii
+CMakeCache.txt
+CMakeFiles/*

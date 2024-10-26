@@ -25,10 +25,11 @@ int main(int argc, char* argv[])
     
     if ((options & REDUCE2) != 0)
         img = divide_by_two(img);
-    
     if ((options & WRITE) != 0)
+    {
+        printf("%s\n",write_path);
         write_ppm(img, write_path);
-
+    }
     img = reduce_heigh(img);
     if ((options & STANDARD_COLOR) != 0)
         display_picture_standard(img);

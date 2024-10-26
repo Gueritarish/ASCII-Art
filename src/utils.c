@@ -24,7 +24,7 @@ int start_with(char *string, char* start)
     size_t start_size = strlen(start);
     if (start_size > str_size)
         return 0;
-    for (size_t i = 0; i < str_size - start_size; i++)
+    for (size_t i = 0; i < start_size; i++)
     {
         if (string[i] != start[i])
             return 0;
@@ -41,7 +41,7 @@ void usage()
     printf("DESCRIPTION\n");
     printf("\tDisplay an ASCII art of a the picture of which path is given\n\n");
     printf("\t-m, --mono\n\t\tshow the picture in black and white ( monochrome )\n\n");
-    printf("\t-r, --reduce\n\t\thalve the size of the image\n\n");
+    printf("\t-r, --reduce\n\t\thalve the size of the image ( can be used twice, above that will return an error )\n\n");
     printf("\t-std, --standard, --regular\n\t\tdisplay the ASCII using only the 8 Standard shell colors\n\t\tif your shell doesn't support 24 bit coloration, please use that\n\n");    
     printf("\t-w=[filename], --write[filename]\n\t\twrite the data of the picture (after modification ) inside .ppm file ( not in ascii art )\n\n");
     printf("\t-?, -h, --help\n\t\tdisplay this help and exit\n");
@@ -64,6 +64,7 @@ int get_options(int argc,char* argv[], PPMimage** img, char** writing_path)
         {
             if ((options & MONO) != 0)
             {
+                printf("Arguments -m or --mono, given twice.\n");
                 options = ERROR;
                 break;
             }
@@ -74,6 +75,7 @@ int get_options(int argc,char* argv[], PPMimage** img, char** writing_path)
             if ((options & REDUCE2) != 0)
             {
                 options = ERROR;
+                printf("Arguments -r or --reduce given more than two times.\n");
                 break;
             }
             if ((options & REDUCE1) != 0)
@@ -87,11 +89,12 @@ int get_options(int argc,char* argv[], PPMimage** img, char** writing_path)
             if ((options & STANDARD_COLOR) != 0)
             {
                 options = ERROR;
+                printf("Arguments -std, --standard or -- regulard, given twice.\n");
                 break;
             }
             options |= STANDARD_COLOR;
         }
-        else if (start_with(argv[i], "-w=") || strcmp(argv[i],"--write=") == 0)
+        else if (start_with(argv[i], "-w=") || start_with(argv[i],"--write="))
         {
             if (!end_with(argv[i], ".ppm"))
             {  
@@ -100,12 +103,16 @@ int get_options(int argc,char* argv[], PPMimage** img, char** writing_path)
                 break;
             }
             options |= WRITE;
-            *writing_path = argv[i];
+            if (argv[i][1] == '-')
+                *writing_path = argv[i] + 8;
+            else
+                *writing_path = argv[i] + 3;
         }
         else if (end_with(argv[i],".jpeg") || end_with(argv[i],".jpg"))
         {
             if (*img)
             {
+                printf("Given two differents paths to a picture.\n");
                 options = ERROR;
                 break;
             }
@@ -117,6 +124,7 @@ int get_options(int argc,char* argv[], PPMimage** img, char** writing_path)
             if (*img)
             {
                 options = ERROR;
+                printf("Given two differents paths to a picture.\n");
                 break;
             }
             *img = read_png(argv[i]);
@@ -126,11 +134,18 @@ int get_options(int argc,char* argv[], PPMimage** img, char** writing_path)
         {
             if (*img)
             {
+                printf("Given two differents paths to a picture.\n");
                 options = ERROR;
                 break;
             }
             *img = read_ppm(argv[i]);
             options |= SUCCESS;
+        }
+        else
+        {
+            options = ERROR;
+            printf("Wrong argument given : %s\n",argv[i]);
+            break;
         }
     }
     if ((options == ERROR || options == HELP) && *img)
