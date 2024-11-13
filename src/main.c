@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
     if ((options & STANDARD_COLOR) != 0)
         display_picture_standard(img);
     else
-        display_picture_true_color(img);
+        display_picture_true_color(img, options & VIVID);
     free_PPM(img);
     return 0;
 }

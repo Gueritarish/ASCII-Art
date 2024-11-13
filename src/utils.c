@@ -37,10 +37,11 @@ void usage()
     printf("NAME\n");
     printf("\tascii - small project to convert pictures in ascii art\n\n");
     printf("SYNOPSIS\n");
-    printf("\tascii [OPTIONS]... [FILE]...\n\n");
+    printf("\tascii [OPTIONS]... [FILE]\n\n");
     printf("DESCRIPTION\n");
     printf("\tDisplay an ASCII art of a the picture of which path is given\n\n");
     printf("\t-m, --mono\n\t\tshow the picture in black and white ( monochrome )\n\n");
+    printf("\t-v, --vivid\n\t\tdisplay the picture using the color as background, looking like a pixel art and not ascii at all\n\n");
     printf("\t-r, --reduce\n\t\thalve the size of the image ( can be used twice, above that will return an error )\n\n");
     printf("\t-std, --standard, --regular\n\t\tdisplay the ASCII using only the 8 Standard shell colors\n\t\tif your shell doesn't support 24 bit coloration, please use that\n\n");    
     printf("\t-w=[filename], --write[filename]\n\t\twrite the data of the picture (after modification ) inside .ppm file ( not in ascii art )\n\n");
@@ -89,10 +90,21 @@ int get_options(int argc,char* argv[], PPMimage** img, char** writing_path)
             if ((options & STANDARD_COLOR) != 0)
             {
                 options = ERROR;
-                printf("Arguments -std, --standard or -- regulard, given twice.\n");
+                printf("Arguments -std, --standard or -- regular, given twice.\n");
                 break;
             }
             options |= STANDARD_COLOR;
+        }
+        else if (strcmp(argv[i],"-v") == 0 || strcmp(argv[i],"--vivid") == 0)
+        {
+            if ((options & VIVID) != 0)
+            {
+                options = ERROR;
+                printf("Arguments -v or --vivid, given twice.\n");
+                break;
+            }
+            options |= VIVID;
+            
         }
         else if (start_with(argv[i], "-w=") || start_with(argv[i],"--write="))
         {

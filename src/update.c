@@ -18,6 +18,7 @@ PPMimage* divide_by_two(PPMimage* img)
         }
     }
     free_PPM(img);
+    img = pic;
     return pic;
 }
 
@@ -35,6 +36,7 @@ PPMimage* saturate(PPMimage* img)
         }
     }
     free_PPM(img);
+    img = pic;
     return pic;
 }
 
@@ -52,5 +54,6 @@ PPMimage* reduce_heigh(PPMimage* img)
         }        
     }
     free_PPM(img);
+    img = pic;
     return pic;
 }

@@ -74,31 +74,11 @@ char* choose_color(PPMpixeldata pixel)
 
 char* get_char_pixel(PPMpixeldata pixel)
 {
-    // .:cP0@#
-    if (mean_pixel_color(pixel) < 45)
-        return " ";
-
-    else if (mean_pixel_color(pixel) < 95)
-        return ".";
-    
-    else if (mean_pixel_color(pixel) < 130)
-        return ":";
-    
-    else if (mean_pixel_color(pixel) < 160)
-        return "c";
-    
-    else if (mean_pixel_color(pixel) < 185)
-        return "P";
-    
-    else if (mean_pixel_color(pixel) < 205)
-        return "0";
-    
-    else if (mean_pixel_color(pixel) < 220)
-        return "@";
-    
-    else
-        return "#";
-    }
+    // .,-+:;ceoxtijlfPB0@#
+    int i = mean_pixel_color(pixel) / 10;
+    char* selection = "  .,--++::;ceoxtijlfPB0@##";
+    return selection + i;
+}
 
 void display_picture_standard(PPMimage* pic)
 {
@@ -124,7 +104,7 @@ void display_picture_standard(PPMimage* pic)
 }
 
 
-void display_picture_true_color(PPMimage* pic)
+void display_picture_true_color(PPMimage* pic, int vivid)
 {
     char* img = calloc(pic->x * pic->y * 20 + pic->y + 1,sizeof(char));
     size_t ind = 0;
@@ -134,8 +114,12 @@ void display_picture_true_color(PPMimage* pic)
     {
         for (int j = 0; j < pic->x; j++)
         {
-            // "\033[38;2;RED;GREEN;BLUEm"
-            memcpy(img + ind, "\033[38;2;",7 * sizeof(char)); // Size 7
+            // "\033[38;2;RED;GREEN;BLUEm" color foreground
+            // "\033[48;2;RED;GREEN;BLUEm" color background
+            if (vivid)
+                memcpy(img + ind, "\033[48;2;", 7 * sizeof(char));
+            else
+                memcpy(img + ind, "\033[38;2;", 7 * sizeof(char));
             ind += 7;
             buff = itoa(buff,pic->data[i][j].red);
             memcpy(img + ind,buff, strlen(buff) * sizeof(char));
@@ -155,20 +139,18 @@ void display_picture_true_color(PPMimage* pic)
             ind += strlen(buff); 
             memcpy(img + ind,"m", sizeof(char));
             ind += 1;
-
-            memcpy(img + ind, get_char_pixel(pic->data[i][j]), sizeof(char));
+            if (vivid)
+                memcpy(img + ind, " ", sizeof(char));
+            else
+                memcpy(img + ind, get_char_pixel(pic->data[i][j]), sizeof(char));
             ind += 1;
         }
-        memcpy(img + ind, "\n", sizeof(char));
-        ind += 1;
+        memcpy(img + ind, "\033[38;2;0;0;0m \n", 15 * sizeof(char));
+        ind += 15;
 
     }
-    //printf("%s\n",img);
     fwrite(img,sizeof(char),ind + 1, stdout);
     fflush(stdout);
-    // FILE* file = fopen("img.log","w");
-    // fprintf(file,"%s\n", img);
-    // fclose(file);
     free(img);
     free(buff);
 }

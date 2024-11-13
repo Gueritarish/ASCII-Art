@@ -37,4 +37,4 @@
 char* choose_color(PPMpixeldata pixel);
 char* get_char_pixel(PPMpixeldata pixel);
 void display_picture_standard(PPMimage* pic);
-void display_picture_true_color(PPMimage* pic);
+void display_picture_true_color(PPMimage* pic, int vivid);
